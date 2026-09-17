@@ -17,7 +17,8 @@ export default function App() {
                     <Route path="/cloud-explorer" element={<Navigate to="/cloud-explorer/aws/storage" replace/>}/>
                     <Route path="/cloud-explorer/:cloud/:service" element={<CloudExplorerPage/>}/>
                     <Route path="/secretsmanager" element={<SecretsManagerPage/>}/>
-                    <Route path="/settings" element={<SettingsPage/>}/>
+                    <Route path="/settings" element={<Navigate to="/console/aws/settings" replace/>}/>
+                    <Route path="/console/:cloud/settings" element={<SettingsPage/>}/>
                     <Route path="*" element={<Navigate to="/console/aws" replace/>}/>
                 </Route>
             </Routes>
