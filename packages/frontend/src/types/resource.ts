@@ -5,7 +5,7 @@ export type KnownResourceType =
     | 'instance' | 'image' | 'vpc' | 'lambda' | 'azure-function' | 'gcp-function'
     | 'dynamodb-table' | 'secret' | 'iam-user' | 'servicebus-namespace'
     | 'queue' | 'fifo-queue' | 'topic' | 'event-bus' | 'rest-api' | 'stack' | 'email'
-    | 'sql-server' | 'postgres-flexible-server' | 'load-balancer' | 'state-machine' | 'scheduler-job';
+    | 'sql-server' | 'postgres-flexible-server' | 'load-balancer' | 'state-machine' | 'scheduler-job' | 'key' | 'parameter' | 'cloud-run-service';
 
 export interface CloudResource {
     id: string
@@ -75,6 +75,29 @@ export interface CosmosItem {
 export interface CosmosQueryResult {
     items: Array<Record<string, unknown> | string | number | boolean | null>
     count: number
+}
+
+/** The generic child-collections SPI: the middle level (a log stream, a Cosmos container). */
+export interface ChildCollection {
+    id: string
+    name: string
+    parentId: string
+    createdAt: string | null
+    metadata: Record<string, unknown>
+}
+
+/** The generic child-collections SPI: the leaf (a log event, a document). */
+export interface ChildItem {
+    id: string
+    collectionId: string | null
+    timestamp: string | null
+    body: Record<string, unknown>
+    metadata: Record<string, unknown>
+}
+
+export interface CollectionPage<T> {
+    items: T[]
+    nextCursor: string | null
 }
 
 export interface SqlCredentials {

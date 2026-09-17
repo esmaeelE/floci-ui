@@ -8,7 +8,10 @@ import type {
   CloudStatus,
 } from "@/types/cloud";
 import type {
+  ChildCollection,
+  ChildItem,
   CloudResource,
+  CollectionPage,
   CosmosContainer,
   CosmosItem,
   CosmosQueryResult,
@@ -138,6 +141,25 @@ export async function createCloudResource(
     apiEndpointKeys.clouds.resources.create,
     requestOptions(cloud, service, { signal, body: values, timeout }),
     { cloud, service },
+  );
+  return res.data;
+}
+
+export async function updateCloudResource(
+  cloud: CloudProvider,
+  service: CloudServiceType,
+  id: string,
+  values: Record<string, unknown>,
+  signal?: AbortSignal,
+): Promise<CloudResource> {
+  const timeout =
+    (cloud === "azure" || cloud === "aws") && service === "database"
+      ? DATABASE_MUTATION_TIMEOUT_MS
+      : undefined;
+  const res = await apiClient.call<CloudResource, Record<string, unknown>>(
+    apiEndpointKeys.clouds.resources.update,
+    requestOptions(cloud, service, { signal, body: values, timeout }),
+    { cloud, service, id },
   );
   return res.data;
 }
@@ -379,6 +401,37 @@ export async function queryCosmosItems(
   return res.data;
 }
 
+export async function listChildCollections(
+  cloud: CloudProvider,
+  service: CloudServiceType,
+  resourceId: string,
+  cursor?: string,
+  signal?: AbortSignal,
+): Promise<CollectionPage<ChildCollection>> {
+  const res = await apiClient.call<CollectionPage<ChildCollection>>(
+    apiEndpointKeys.clouds.childCollections.list,
+    requestOptions(cloud, service, { signal, params: cursor ? { cursor } : undefined }),
+    { cloud, service, id: resourceId },
+  );
+  return res.data;
+}
+
+export async function listCollectionItems(
+  cloud: CloudProvider,
+  service: CloudServiceType,
+  resourceId: string,
+  collectionId: string,
+  cursor?: string,
+  signal?: AbortSignal,
+): Promise<CollectionPage<ChildItem>> {
+  const res = await apiClient.call<CollectionPage<ChildItem>>(
+    apiEndpointKeys.clouds.childCollections.items.list,
+    requestOptions(cloud, service, { signal, params: cursor ? { cursor } : undefined }),
+    { cloud, service, id: resourceId, cid: collectionId },
+  );
+  return res.data;
+}
+
 export async function listSqlDatabases(
   cloud: CloudProvider,
   serverId: string,
@@ -498,6 +551,20 @@ export async function listNoSqlItems(
   const res = await apiClient.call<NoSqlItem[]>(
     apiEndpointKeys.clouds.nosql.items.list,
     requestOptions(cloud, "nosql", { signal }),
+    { cloud, id: resourceId },
+  );
+  return res.data;
+}
+
+export async function putNoSqlItem(
+  cloud: CloudProvider,
+  resourceId: string,
+  document: Record<string, unknown>,
+  signal?: AbortSignal,
+): Promise<NoSqlItem> {
+  const res = await apiClient.call<NoSqlItem, Record<string, unknown>>(
+    apiEndpointKeys.clouds.nosql.items.put,
+    requestOptions(cloud, "nosql", { signal, body: document }),
     { cloud, id: resourceId },
   );
   return res.data;
