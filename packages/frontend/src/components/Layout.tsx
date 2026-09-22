@@ -189,7 +189,7 @@ export function Layout() {
                         <div className="nav-section">
                             <span className="nav-label">General</span>
                             <NavItem to={`/console/${activeCloud}`} icon={LayoutDashboard} label="Console Home" collapsed={collapsed}/>
-                            <NavItem to="/settings" icon={Settings} label="Settings" collapsed={collapsed}/>
+                            <NavItem to={`/console/${activeCloud}/settings`} icon={Settings} label="Settings" collapsed={collapsed}/>
                         </div>
                         <CloudServiceNav collapsed={collapsed}/>
                     </nav>
