@@ -475,8 +475,10 @@ echo "FLOCI_CONTAINER_SOCKET=$XDG_RUNTIME_DIR/podman/podman.sock" >> .env
 podman-compose up
 ```
 
-Without it the emulator still starts, but invoking a Lambda function fails with
-"Failed to start Lambda container".
+Without the override, Podman never creates the `floci` container at all: the
+mount source is missing, so `up` aborts with the `statfs` error above and
+`floci-api` then fails its `depends_on` check. No service starts, so there is no
+emulator to invoke against.
 
 Convenience targets:
 
